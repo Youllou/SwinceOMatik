@@ -36,8 +36,7 @@ class SwinceSession:
         # Bind the session factory to the engine
         SessionFactory.configure(bind=engine)
 
-        # Create tables if they don't exist
-        from swincer.model import Base
+
         Base.metadata.create_all(engine)
 
     def __enter__(self):
