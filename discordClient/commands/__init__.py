@@ -1,1 +1,1 @@
-from discordClient.commands.swince import Swince
+from .swince import Swince

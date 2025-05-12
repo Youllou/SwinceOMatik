@@ -10,8 +10,16 @@ from discord import app_commands
 
 
 # local import
-from discordClient.commands import Swince
-from discordClient.events import *
+from commands import Swince
+from events import *
+
+
+SWINCE_O_MATIK_TOKEN = os.getenv("SWINCE_O_MATIK_TOKEN")
+
+if not SWINCE_O_MATIK_TOKEN:
+    raise ValueError("SWINCE_O_MATIK_TOKEN is not set")
+
+
 
 
 intents = discord.Intents.default()
@@ -80,5 +88,4 @@ if __name__ == '__main__':
     for command in command_listener:
         asyncio.run(SwinceOMatik.add_cog(command))
 
-    #leChauffeur.run('this_is_not_my_token')
-    SwinceOMatik.run("MTM3MDQ0NDE1MzU0NDI0OTQ0Nw.GjsYEf.kApf3Pwy75qS95Ln-w2PJ87KiHyMU0-X1L-69U")
+    SwinceOMatik.run(SWINCE_O_MATIK_TOKEN)

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=67.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swincebot"
+version = "0.1.0"
+description = "A Discord bot for tracking nominations (Swince)"
+authors = [{ name = "Youllou", email = "you@example.com" }]
+requires-python = ">=3.11"
+dependencies = [
+    "discord.py>=2.3.2",
+    "SQLAlchemy>=2.0.0",
+    "python-dotenv>=1.0.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["discordClient", "swincer"]
+
+[tool.setuptools]
+package-dir = { ""= "." }

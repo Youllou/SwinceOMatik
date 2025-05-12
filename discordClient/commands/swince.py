@@ -2,8 +2,7 @@ from discord import app_commands
 from discord.ext import commands
 import discord
 
-from swincer import model as swincer_model
-from swincer import controller as swincer_controller
+from SwinceOMatik.swincer import controller as swincer_controller
 
 
 
@@ -14,21 +13,19 @@ class MemberListTransformer(app_commands.Transformer):
     async def transform(cls, interaction: discord.Interaction, value: str) -> list[discord.Member]:
         print(value)
         members = []
-        value.replace(">", ">,")
-        # remove last comma
-        if value[-1] == ",":
-            value = value[:-1]
-        for mention in value.split(","):
-            originator, recipients = mention.split(">")
-            originator = interaction.guild.get_member(int(originator.strip()[3:-1]))
-            if originator is None:
-                raise app_commands.TransformerError(f"Originator {originator} not found")
-            members.append(originator)
-            for recipient in recipients.split("@"):
-                recipient = interaction.guild.get_member(int(recipient.strip()[3:-1]))
-                if recipient is None:
-                    raise app_commands.TransformerError(f"Recipient {recipient} not found")
-                members.append(recipient)
+        for mention in value.split(" "):
+            mention = mention.strip()
+            if mention.startswith("<@") and mention.endswith(">"):
+                user_id = int(mention[2:-1])
+                member = interaction.guild.get_member(user_id)
+                if member is not None:
+                    members.append(member)
+                else:
+                    await interaction.response.send_message(f"User with ID {user_id} not found in the guild.", ephemeral=True)
+                    return []
+            else:
+                await interaction.response.send_message(f"Invalid mention format: {mention}", ephemeral=True)
+                return []
         return members
 
 
@@ -39,8 +36,8 @@ class Swince(commands.Cog):
     @app_commands.command(name="swince", description="Register a chug nomination video")
     @app_commands.describe(
         video="We need video proof of the chug",
-        originators="Upload the originator in the format @user1@user2, ... (one user can be entered multiple times)",
-        recipients="Upload the recipients in the format @user1@user2, ... (one user can be entered multiple times)",
+        originators="Upload the originators in the format @user1 @user2 ... (one user can be entered multiple times)",
+        recipients="Upload the recipients in the format @user1 @user2 ... (one user can be entered multiple times)",
         message="Optional message to include"
     )
     async def swince(
@@ -73,7 +70,7 @@ class Swince(commands.Cog):
         file = await video.to_file()
 
         await interaction.followup.send(
-            f"{originators_name} just nominated {recipients_name}{f"\n>>> {message}" if message is not None else ""}",
+            f"{originators_name} just nominated {recipients_name}"+('\n>>>'+message) if message is not None else '',
             ephemeral=False, file=file
         )
 
@@ -93,8 +90,11 @@ class Swince(commands.Cog):
         command_id = None
         for command in myCommands:
             if command.name == "swince":
-                command_id = command.id
-        await interaction.followup.send(f"You have {score} chugs to do ! ({gotten} gotten, {given} given)\nChop chop lets not waste a second ! Use {"<" if command_id is not None else ""}/swince{str(command_id)+">" if command_id is not None else ""} to register a chug nomination video")
+                try:
+                    command_id = command.id
+                except AttributeError:
+                    command_id = None
+        await interaction.followup.send(f"You have {score} chugs to do ! ({gotten} gotten, {given} given)\nChop chop lets not waste a second ! Use {'<' if command_id is not None else ''}/swince{(':'+str(command_id)+'>') if command_id is not None else ''} to register a chug nomination video")
 
     @app_commands.command(name="scoreboard", description="Check who is the best chugger")
     async def scoreboard(self, interaction: discord.Interaction):
@@ -107,7 +107,7 @@ class Swince(commands.Cog):
         scoreList = ""
         detailsList = ""
         for i, (name, gotten, given) in enumerate(scores):
-            nameList += f"{i + 1}. {name}\n"
+            nameList += f"{name}\n"
             scoreList += f"{gotten - given}\n"
             detailsList += f"({gotten} gotten, {given} given)\n"
         embed.add_field(name="Name", value=nameList, inline=True)
