@@ -96,7 +96,7 @@ class SwinceController:
 
     def get_all_swince(self):
         # Query all Swince objects
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             swince_list = session.query(Swince).all()
         return swince_list
 
@@ -110,7 +110,7 @@ class UserController :
         # Create a new User object
         new_user = User(id=user_id, name=user_name)
 
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             # Add the new User object to the session
             try :
                 session.add(new_user)
@@ -125,7 +125,7 @@ class UserController :
 
     def get_user(self, user_id):
         # Query the User object by ID
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             user = session.query(User).filter(User.id == user_id).first()
 
         return user
@@ -133,7 +133,7 @@ class UserController :
 
     def get_all_users(self):
         # Query all User objects
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             user_list = session.query(User).all()
         return user_list
 
@@ -147,7 +147,7 @@ class MessageController:
         # Create a new Message object
         new_message = Message(id=message_id, content=content, author=author)
 
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             # Add the new Message object to the session
             session.add(new_message)
             # Commit the transaction
@@ -155,14 +155,14 @@ class MessageController:
 
     def get_message(self, message_id):
         # Query the Message object by ID
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             message = session.query(Message).filter(Message.id == message_id).first()
 
         return message
 
     def get_all_messages(self):
         # Query all Message objects
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             message_list = session.query(Message).all()
         return message_list
 
@@ -173,7 +173,7 @@ class StatController :
         self.db_dir = db_dir
 
     def get_score(self,userID):
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             target_num = session.query(Target).filter(Target.target_id == userID).count()
             origin_num = session.query(Originator).filter(Originator.originator_id == userID).count()
 
@@ -185,7 +185,7 @@ class StatController :
     """
 
     def get_all_score(self):
-        with SwinceSession(self.db_name,self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             user_list = session.query(User).all()
             score_list = []
             for user in user_list:
