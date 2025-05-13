@@ -16,32 +16,30 @@ Session = scoped_session(SessionFactory)
 
 
 class SwinceSession:
-    def __init__(self, db_name, db_dir):
+    def __init__(self, db_name):
         # Create a new session for the database
         self.db_name = db_name
-        self.db_dir = db_dir
 
-    def get_database_path(self,db_name):
-        # Generate a unique database file path for each guild
-        os.makedirs(self.db_dir, exist_ok=True)
-        return os.path.join(self.db_dir, f"{db_name}.db")
-
-    def connect_to_guild_database(self,db_name):
-        # Get the database path
-        db_path = self.get_database_path(db_name)
+    def connect_to_guild_database(self):
+        # Get MySQL connection details from environment variables
+        username = os.getenv("MYSQL_USER")
+        password = os.getenv("MYSQL_PASSWORD")
+        host = os.getenv("MYSQL_HOST")
+        port = os.getenv("MYSQL_PORT", 3306)
 
         # Create a new engine for the guild's database
-        engine = create_engine(f"sqlite:///{db_path}")
+        engine = create_engine(
+            f"mysql+pymysql://{username}:{password}@{host}:{port}/{self.db_name}"
+        )
 
         # Bind the session factory to the engine
         SessionFactory.configure(bind=engine)
-
 
         Base.metadata.create_all(engine)
 
     def __enter__(self):
         # Connect to the guild's database
-        self.connect_to_guild_database(self.db_name)
+        self.connect_to_guild_database()
         self.session = Session()
         return self.session
 
