@@ -35,40 +35,40 @@ class Swince(commands.Cog):
     @app_commands.command(name="swince", description="Register a chug nomination video")
     @app_commands.describe(
         video="We need video proof of the chug",
+        targets="Upload the targets in the format @user1 @user2 ... (one user can be entered multiple times)",
         originators="Upload the originators in the format @user1 @user2 ... (one user can be entered multiple times)",
-        recipients="Upload the recipients in the format @user1 @user2 ... (one user can be entered multiple times)",
         message="Optional message to include"
     )
     async def swince(
             self,
             interaction: discord.Interaction,
             video: discord.Attachment,
+            targets: app_commands.Transform[list[discord.Member], MemberListTransformer],
             originators: app_commands.Transform[list[discord.Member], MemberListTransformer],
-            recipients: app_commands.Transform[list[discord.Member], MemberListTransformer],
             message: str = None,
     ):
         await interaction.response.defer(thinking=True)
         # TODO : Handle if video is not a video (add a check for direct verification by discord)
         originators_name = ", ".join(m.mention for m in originators)
-        recipients_name = ", ".join(m.mention for m in recipients)
+        targets_name = ", ".join(m.mention for m in targets)
 
         user_controller = swincer_controller.UserController(interaction.guild.id)
         swince_controller = swincer_controller.SwinceController(interaction.guild.id)
 
         for originator in originators:
             user_controller.add_user(originator.id, originator.name)
-        for recipient in recipients:
+        for recipient in targets:
             user_controller.add_user(recipient.id, recipient.name)
         swince_controller.add_swince(
             from_user=[originator.id for originator in originators],
-            to_user=[recipient.id for recipient in recipients],
+            to_user=[recipient.id for recipient in targets],
             date=interaction.created_at,
             origin=interaction.user.id,
         )
 
         file = await video.to_file()
-        to_send = f"{originators_name} just nominated {recipients_name}"
-        to_send+= f"\n\n{message}" if message is not None else ''
+        to_send = f"{originators_name} just nominated {targets_name}"
+        to_send+= f"\n>>>{message}" if message is not None else ''
         await interaction.followup.send(
             to_send,
             ephemeral=False, file=file
