@@ -11,7 +11,6 @@ from SwinceOMatik.swincer import controller as swincer_controller
 class MemberListTransformer(app_commands.Transformer):
     @classmethod
     async def transform(cls, interaction: discord.Interaction, value: str) -> list[discord.Member]:
-        print(value)
         members = []
         for mention in value.split(" "):
             mention = mention.strip()
@@ -68,10 +67,10 @@ class Swince(commands.Cog):
         )
 
         file = await video.to_file()
-        message = f"{originators_name} just nominated {recipients_name}"
-        message+= f"\n\n{message}" if message is not None else ''
+        to_send = f"{originators_name} just nominated {recipients_name}"
+        to_send+= f"\n\n{message}" if message is not None else ''
         await interaction.followup.send(
-            message=message,
+            to_send,
             ephemeral=False, file=file
         )
 

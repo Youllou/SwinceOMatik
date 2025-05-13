@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -11,23 +11,23 @@ class Swince(Base) :
 
 class User(Base):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     name = Column(String(50), nullable=False)
 
 class Originator(Base):
     __tablename__ = 'originator'
     id = Column(Integer, primary_key=True, autoincrement=True)
     swince_id = Column(Integer, ForeignKey('swince.id'), nullable=False)
-    originator_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    originator_id = Column(BigInteger, ForeignKey('user.id'), nullable=False)
 
 class Target(Base):
     __tablename__ = 'target'
     id = Column(Integer, primary_key=True, autoincrement=True)
     swince_id = Column(Integer, ForeignKey('swince.id'), nullable=False)
-    target_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    target_id = Column(BigInteger, ForeignKey('user.id'), nullable=False)
 
 class Message(Base):
     __tablename__ = 'message'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     content = Column(String(200), nullable=False)
-    author = Column(String(50), ForeignKey('user.id'), nullable=False)
+    author = Column(BigInteger, ForeignKey('user.id'), nullable=False)

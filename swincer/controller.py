@@ -1,7 +1,7 @@
 import sqlite3
 
 import sqlalchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 import os
 
@@ -25,26 +25,18 @@ class SwinceSession:
         username = os.getenv("MYSQL_USER")
         password = os.getenv("MYSQL_PASSWORD")
         root_password = os.getenv("MYSQL_ROOT_PASSWORD")
-        print(root_password)
         host = os.getenv("MYSQL_HOST")
         port = os.getenv("MYSQL_PORT", 3306)
 
         # Create a new engine for the guild's database
         mysql_engine = create_engine(
-            f"mysql+pymysql://root:049fjdocvd5%jofrk@mysql:3309/"
+            f"mysql+pymysql://root:{root_password}@mysql/"
         )
         with mysql_engine.connect() as connection:
-            existing_databases = connection.execute("SHOW DATABASES;")
-            print(existing_databases)
-            # Results are a list of single item tuples, so unpack each tuple
-            existing_databases = [d[0] for d in existing_databases]
-            if self.db_name not in existing_databases:
-                connection.execute(f"CREATE DATABASE {self.db_name}")  # create db
-            connection.execute(f"USE {self.db_name}")  # use db
-            connection.execute(f"GRANT ALL PRIVILEGES ON *.* TO {username}@'\%' IDENTIFIED BY  '{username}'")
-            print(connection.execute("SHOW DATABASES;"))
+            connection.execute(text(f"CREATE DATABASE IF NOT EXISTS guild_{self.db_name}"))  # create db
+            connection.execute(text(f"USE guild_{self.db_name}"))  # use db
 
-        engine = create_engine(f"mysql+pymysql://{username}:{password}@mysql:{port}/{self.db_name}")
+        engine = create_engine(f"mysql+pymysql://root:{root_password}@mysql:{port}/guild_{self.db_name}")
         # Bind the session factory to the engine
         SessionFactory.configure(bind=engine)
 
@@ -64,15 +56,14 @@ class SwinceSession:
 
 class SwinceController:
     def __init__(self, db_name, db_dir="./assets/databases"):
-        self.db_name = db_name
-        self.db_dir = db_dir
+        self.db_name = db_name\
 
     def add_swince(self, from_user, to_user, date, origin):
         # Create a new Swince object
         new_swince = Swince(date=date, origin=origin)
 
 
-        with SwinceSession(self.db_name, self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             # Add the new Swince object to the session
             session.add(new_swince)
             session.commit()
@@ -102,7 +93,7 @@ class SwinceController:
 
     def get_swince(self, swince_id):
         # Query the Swince object by ID
-        with SwinceSession(self.db_name, self.db_dir) as session:
+        with SwinceSession(self.db_name) as session:
             swince = session.query(Swince).filter(Swince.id == swince_id).first()
 
         return swince
@@ -115,9 +106,8 @@ class SwinceController:
 
 
 class UserController :
-    def __init__(self, db_name, db_dir="./assets/databases"):
+    def __init__(self, db_name):
         self.db_name = db_name
-        self.db_dir = db_dir
 
     def add_user(self, user_id, user_name):
         # Create a new User object
@@ -152,9 +142,8 @@ class UserController :
 
 
 class MessageController:
-    def __init__(self, db_name,db_dir="./assets/databases"):
+    def __init__(self, db_name):
         self.db_name = db_name
-        self.db_dir = db_dir
 
     def add_message(self, message_id, content, author):
         # Create a new Message object
@@ -181,9 +170,8 @@ class MessageController:
 
 
 class StatController :
-    def __init__(self, db_name,db_dir="./assets/databases"):
+    def __init__(self, db_name):
         self.db_name = db_name
-        self.db_dir = db_dir
 
     def get_score(self,userID):
         with SwinceSession(self.db_name) as session:
