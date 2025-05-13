@@ -68,9 +68,10 @@ class Swince(commands.Cog):
         )
 
         file = await video.to_file()
-
+        message = f"{originators_name} just nominated {recipients_name}"
+        message+= f"\n\n{message}" if message is not None else ''
         await interaction.followup.send(
-            f"{originators_name} just nominated {recipients_name}"+('\n>>>'+message) if message is not None else '',
+            message=message,
             ephemeral=False, file=file
         )
 
