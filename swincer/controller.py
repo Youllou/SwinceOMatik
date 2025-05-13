@@ -30,13 +30,13 @@ class SwinceSession:
 
         # Create a new engine for the guild's database
         mysql_engine = create_engine(
-            f"mysql+pymysql://root:{root_password}@mysql/"
+            f"mysql+pymysql://root:{root_password}@db/"
         )
         with mysql_engine.connect() as connection:
             connection.execute(text(f"CREATE DATABASE IF NOT EXISTS guild_{self.db_name}"))  # create db
             connection.execute(text(f"USE guild_{self.db_name}"))  # use db
 
-        engine = create_engine(f"mysql+pymysql://root:{root_password}@mysql:{port}/guild_{self.db_name}")
+        engine = create_engine(f"mysql+pymysql://root:{root_password}@db:{port}/guild_{self.db_name}")
         # Bind the session factory to the engine
         SessionFactory.configure(bind=engine)
 
