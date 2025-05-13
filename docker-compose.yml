@@ -5,15 +5,28 @@ services:
       - .env
     depends_on:
       - mysql
+    networks:
+      - app_network
+
 
   mysql:
-    image: mysql:8.0
+    image: mysql:9.3
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: swince_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
 
 volumes:
   mysql_data:
+
+networks:
+  app_network:
+    driver: bridge
+    name: app_network
+

@@ -24,14 +24,27 @@ class SwinceSession:
         # Get MySQL connection details from environment variables
         username = os.getenv("MYSQL_USER")
         password = os.getenv("MYSQL_PASSWORD")
+        root_password = os.getenv("MYSQL_ROOT_PASSWORD")
+        print(root_password)
         host = os.getenv("MYSQL_HOST")
         port = os.getenv("MYSQL_PORT", 3306)
 
         # Create a new engine for the guild's database
-        engine = create_engine(
-            f"mysql+pymysql://{username}:{password}@{host}:{port}/{self.db_name}"
+        mysql_engine = create_engine(
+            f"mysql+pymysql://root:049fjdocvd5%jofrk@mysql:3309/"
         )
+        with mysql_engine.connect() as connection:
+            existing_databases = connection.execute("SHOW DATABASES;")
+            print(existing_databases)
+            # Results are a list of single item tuples, so unpack each tuple
+            existing_databases = [d[0] for d in existing_databases]
+            if self.db_name not in existing_databases:
+                connection.execute(f"CREATE DATABASE {self.db_name}")  # create db
+            connection.execute(f"USE {self.db_name}")  # use db
+            connection.execute(f"GRANT ALL PRIVILEGES ON *.* TO {username}@'\%' IDENTIFIED BY  '{username}'")
+            print(connection.execute("SHOW DATABASES;"))
 
+        engine = create_engine(f"mysql+pymysql://{username}:{password}@mysql:{port}/{self.db_name}")
         # Bind the session factory to the engine
         SessionFactory.configure(bind=engine)
 
