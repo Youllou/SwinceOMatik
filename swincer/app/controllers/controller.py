@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 import os
 
-from .model import *
+from app.models.model import *
 
 # Base session factory
 SessionFactory = sessionmaker()

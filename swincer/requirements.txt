@@ -1,3 +1,4 @@
-sqlalchemy
-cryptography
-pymysql
+Flask
+flask-sqlalchemy
+flask-restx
+dotenv
