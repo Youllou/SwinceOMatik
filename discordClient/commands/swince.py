@@ -101,18 +101,29 @@ class Swince(commands.Cog):
         await interaction.response.defer(thinking=True)
         stats_controller = swincer_controller.StatController(interaction.guild.id)
         scores = stats_controller.get_all_score()
+        scores.sort(key=lambda x: x[1] - x[2], reverse=True)
         # score is a list of tuples (user_name, gotten, given)
         embed = discord.Embed(title="Scoreboard", color=discord.Color.blue())
-        nameList = ""
-        scoreList = ""
-        detailsList = ""
-        for i, (name, gotten, given) in enumerate(scores):
-            nameList += f"{name}\n"
-            scoreList += f"{gotten - given}\n"
-            detailsList += f"({gotten} gotten, {given} given)\n"
-        embed.add_field(name="Name", value=nameList, inline=True)
-        embed.add_field(name="Score", value=scoreList, inline=True)
-        embed.add_field(name="Details", value=detailsList, inline=True)
+        nameList = []
+        scoreList = []
+        detailsList = []
+        longestName = 0
+
+        for (name, gotten, given) in scores:
+            nameList.append(name)
+            if len(name) > longestName:
+                longestName = len(name)
+            scoreList.append(gotten - given)
+            detailsList.append(f"{gotten} gotten, {given} given")
+        field = ""
+        for i in range(len(nameList)):
+            name = nameList[i]
+            score = scoreList[i]
+            details = detailsList[i]
+            field += f"{name.center(longestName)} : {str(score).center(5)} ({details})\n"
+
+        embed.add_field(name="Name".center(longestName)+" : Score ", value=field, inline=False)
+
         await interaction.followup.send(embed=embed)
 
 
