@@ -87,5 +87,5 @@ if __name__ == '__main__':
 
     for command in command_listener:
         asyncio.run(SwinceOMatik.add_cog(command))
-
+    
     SwinceOMatik.run(SWINCE_O_MATIK_TOKEN)

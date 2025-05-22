@@ -101,9 +101,8 @@ class Swince(commands.Cog):
         await interaction.response.defer(thinking=True)
         stats_controller = swincer_controller.StatController(interaction.guild.id)
         scores = stats_controller.get_all_score()
-        scores.sort(key=lambda x: x[1] - x[2], reverse=True)
+        scores.sort(key=lambda x: x[1] - x[2])
         # score is a list of tuples (user_name, gotten, given)
-        embed = discord.Embed(title="Scoreboard", color=discord.Color.blue())
         nameList = []
         scoreList = []
         detailsList = []
@@ -111,20 +110,27 @@ class Swince(commands.Cog):
 
         for (name, gotten, given) in scores:
             nameList.append(name)
+            print(f"len of current : {len(name)}")
             if len(name) > longestName:
                 longestName = len(name)
+                print(f"new longest : {longestName}")
             scoreList.append(gotten - given)
-            detailsList.append(f"{gotten} gotten, {given} given")
-        field = ""
+            detailsList.append(f"{gotten} 📥, {given} 📨")
+        print(nameList)
+        print("Name")
+        print("Name".center(longestName))
+        message = "# Scoreboard\n"
+        message += "```\n"
+        message += f"|{'Name'.center(longestName+1)} | {'Score'.center(5)} | {'Details'}\n"
+        message += f"|{'-' * (longestName+1)}-|-{'-' * 6}|{'---' * 3} \n"
         for i in range(len(nameList)):
             name = nameList[i]
             score = scoreList[i]
             details = detailsList[i]
-            field += f"{name.center(longestName)} : {str(score).center(5)} ({details})\n"
+            message += f"| {name:<{longestName}} | {str(score).center(5)} | {details}\n"
+        message += "```"
 
-        embed.add_field(name="Name".center(longestName)+" : Score ", value=field, inline=False)
-
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(message)
 
 
 

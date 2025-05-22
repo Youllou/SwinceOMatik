@@ -42,7 +42,7 @@ class SwinceSession:
 
         Base.metadata.create_all(engine)
 
-    def __enter__(self):
+    def __enter__(self)->Session:
         # Connect to the guild's database
         self.connect_to_guild_database()
         self.session = Session()
@@ -173,11 +173,15 @@ class StatController :
     def __init__(self, db_name):
         self.db_name = db_name
 
+    def get_score_with_session(self, session, userID):
+        target_num = session.query(Target).filter(Target.target_id == userID).count()
+        origin_num = session.query(Originator).filter(Originator.originator_id == userID).count()
+
+        return target_num,origin_num
+
     def get_score(self,userID):
         with SwinceSession(self.db_name) as session:
-            target_num = session.query(Target).filter(Target.target_id == userID).count()
-            origin_num = session.query(Originator).filter(Originator.originator_id == userID).count()
-
+            target_num, origin_num = self.get_score_with_session(session, userID)
         return target_num,origin_num
 
     """
@@ -190,7 +194,7 @@ class StatController :
             user_list = session.query(User).all()
             score_list = []
             for user in user_list:
-                score = self.get_score(user.id)
+                score = self.get_score_with_session(session, user.id)
                 score_list.append((user.name,*score))
         return score_list
 
