@@ -35,16 +35,16 @@ class Swince(commands.Cog):
     @app_commands.command(name="swince", description="Register a chug nomination video")
     @app_commands.describe(
         video="We need video proof of the chug",
-        targets="Upload the targets in the format @user1 @user2 ... (one user can be entered multiple times)",
         originators="Upload the originators in the format @user1 @user2 ... (one user can be entered multiple times)",
+        targets="Upload the targets in the format @user1 @user2 ... (one user can be entered multiple times)",
         message="Optional message to include"
     )
     async def swince(
             self,
             interaction: discord.Interaction,
             video: discord.Attachment,
-            targets: app_commands.Transform[list[discord.Member], MemberListTransformer],
             originators: app_commands.Transform[list[discord.Member], MemberListTransformer],
+            targets: app_commands.Transform[list[discord.Member], MemberListTransformer],
             message: str = None,
     ):
         await interaction.response.defer(thinking=True)
@@ -101,7 +101,7 @@ class Swince(commands.Cog):
         await interaction.response.defer(thinking=True)
         stats_controller = swincer_controller.StatController(interaction.guild.id)
         scores = stats_controller.get_all_score()
-        scores.sort(key=lambda x: x[1] - x[2])
+        scores.sort(key=lambda x: -(x[1] - x[2]))
         # score is a list of tuples (user_name, gotten, given)
         nameList = []
         scoreList = []
