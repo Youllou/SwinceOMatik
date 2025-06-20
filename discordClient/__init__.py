@@ -14,6 +14,9 @@ from commands import Swince
 from events import *
 
 
+# domain import
+from SwinceOMatik.swincer import controller as swincer_controller
+
 SWINCE_O_MATIK_TOKEN = os.getenv("SWINCE_O_MATIK_TOKEN")
 
 if not SWINCE_O_MATIK_TOKEN:
@@ -62,6 +65,13 @@ async def on_ready():
             SwinceOMatik.tree.copy_global_to(guild=guild)
             await SwinceOMatik.tree.sync(guild=discord.Object(id=guild.id))
             print(f"Synced commands for guild: {guild.name} (ID: {guild.id})")
+            user_controller = swincer_controller.UserController(guild.id)
+            users = user_controller.get_all_users()  # Ensure all users are loaded into the database
+            for user in users:
+                discord_user = guild.get_member(user.id)
+                if discord_user:
+                    nickname = discord_user.nick if discord_user.nick else discord_user.name
+                    user_controller.update_user_name(user.id, nickname)
         except discord.HTTPException:
             print(f"Failed to sync commands for guild: {guild.name} (ID: {guild.id})")
 

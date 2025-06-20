@@ -55,6 +55,7 @@ class Swince(commands.Cog):
         user_controller = swincer_controller.UserController(interaction.guild.id)
         swince_controller = swincer_controller.SwinceController(interaction.guild.id)
 
+
         for originator in originators:
             user_controller.add_user(originator.id, originator.name)
         for recipient in targets:
@@ -100,6 +101,15 @@ class Swince(commands.Cog):
     async def scoreboard(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)
         stats_controller = swincer_controller.StatController(interaction.guild.id)
+        user_controller = swincer_controller.UserController(interaction.guild.id)
+
+        users = user_controller.get_all_users()
+        for user in users:
+            discord_user = interaction.guild.get_member(user.id)
+            if discord_user:
+                nickname = discord_user.nick if discord_user.nick else discord_user.name
+                user_controller.update_user_name(user.id, nickname)
+
         scores = stats_controller.get_all_score()
         scores.sort(key=lambda x: -(x[1] - x[2]))
         # score is a list of tuples (user_name, gotten, given)
@@ -107,6 +117,8 @@ class Swince(commands.Cog):
         scoreList = []
         detailsList = []
         longestName = 0
+
+
 
         for (name, gotten, given) in scores:
             nameList.append(name)

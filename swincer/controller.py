@@ -141,6 +141,27 @@ class UserController :
         return user_list
 
 
+    """This method has two usecases :
+        1. At first the global name was used so this method is used to gracefully update the name of the user to its nickname
+        2. If the user change its nickname on discord, this method is used to update the name in the database
+    """
+    def update_user_name(self, user_id, new_name):
+        """
+        Update the name of a user in the database.
+
+        :param user_id: The ID of the user to update.
+        :param new_name: The new name to set for the user.
+        :return: None
+        """
+        with SwinceSession(self.db_name) as session:
+            user = session.query(User).filter(User.id == user_id).first()
+            if user:
+                user.name = new_name
+                session.commit()
+            else:
+                print(f"User with ID {user_id} not found in the database.")
+
+
 class MessageController:
     def __init__(self, db_name):
         self.db_name = db_name
@@ -197,5 +218,6 @@ class StatController :
                 score = self.get_score_with_session(session, user.id)
                 score_list.append((user.name,*score))
         return score_list
+
 
 
