@@ -66,11 +66,11 @@ async def on_ready():
             await SwinceOMatik.tree.sync(guild=discord.Object(id=guild.id))
             print(f"Synced commands for guild: {guild.name} (ID: {guild.id})")
             user_controller = swincer_controller.UserController(guild.id)
-            users = user_controller.get_all_users()  # Ensure all users are loaded into the database
+            users = user_controller.get_all_users()
             for user in users:
                 discord_user = guild.get_member(user.id)
                 if discord_user:
-                    nickname = discord_user.nick if discord_user.nick else discord_user.name
+                    nickname = discord_user.nick if discord_user.nick else discord_user.display_name
                     user_controller.update_user_name(user.id, nickname)
         except discord.HTTPException:
             print(f"Failed to sync commands for guild: {guild.name} (ID: {guild.id})")

@@ -107,7 +107,7 @@ class Swince(commands.Cog):
         for user in users:
             discord_user = interaction.guild.get_member(user.id)
             if discord_user:
-                nickname = discord_user.nick if discord_user.nick else discord_user.name
+                nickname = discord_user.nick if discord_user.nick else discord_user.display_name
                 user_controller.update_user_name(user.id, nickname)
 
         scores = stats_controller.get_all_score()
