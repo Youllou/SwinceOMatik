@@ -125,10 +125,10 @@ class Swince(commands.Cog):
 
 
         for (name, gotten, given) in scores:
-	    name = name.replace("`","\`")
+            name = name.replace("`","\`")
             # ellipsise and truncate long names
             if len(name) > nameFieldWidth:
-                name = name[:nameFieldWidth-1] + 'â€¦'
+                name = name[:nameFieldWidth-1] + '…'
 
             score = gotten - given
             details = f"{str(gotten):>2} 📥 {str(given):>2} 📨"
