@@ -113,33 +113,27 @@ class Swince(commands.Cog):
         scores = stats_controller.get_all_score()
         scores.sort(key=lambda x: -(x[1] - x[2]))
         # score is a list of tuples (user_name, gotten, given)
-        nameList = []
-        scoreList = []
-        detailsList = []
-        longestName = 0
 
+        longestName = max(map((lambda x: len(x[0])), scores))
+        # could use longestName for dynamic width
+        nameFieldWidth = 16
+
+        message = "# Scoreboard\n"
+        message += "```\n"
+        message += f"|{'Name'.center(nameFieldWidth+1)} | {'Score'.center(5)} | {'Details'}\n"
+        message += f"|{'-' * (nameFieldWidth+1)}-|-{'-' * 6}|{'---' * 4}\n"
 
 
         for (name, gotten, given) in scores:
-            nameList.append(name)
-            print(f"len of current : {len(name)}")
-            if len(name) > longestName:
-                longestName = len(name)
-                print(f"new longest : {longestName}")
-            scoreList.append(gotten - given)
-            detailsList.append(f"{gotten} 📥, {given} 📨")
-        print(nameList)
-        print("Name")
-        print("Name".center(longestName))
-        message = "# Scoreboard\n"
-        message += "```\n"
-        message += f"|{'Name'.center(longestName+1)} | {'Score'.center(5)} | {'Details'}\n"
-        message += f"|{'-' * (longestName+1)}-|-{'-' * 6}|{'---' * 3} \n"
-        for i in range(len(nameList)):
-            name = nameList[i]
-            score = scoreList[i]
-            details = detailsList[i]
-            message += f"| {name:<{longestName}} | {str(score).center(5)} | {details}\n"
+            # ellipsise and truncate long names
+            if len(name) > nameFieldWidth:
+                name = name[:nameFieldWidth-1] + 'â€¦'
+
+            score = gotten - given
+            details = f"{str(gotten):>2} 📥 {str(given):>2} 📨"
+            
+            message += f"| {name:<{nameFieldWidth}} | {str(score):>4}  | {details}\n"
+
         message += "```"
 
         await interaction.followup.send(message)
