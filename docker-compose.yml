@@ -1,5 +1,6 @@
 services:
   app:
+    restart: always
     build: .
     env_file:
       - .env
@@ -20,8 +21,6 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app_network
-
-
 
 volumes:
   mysql_data:
