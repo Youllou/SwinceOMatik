@@ -121,19 +121,18 @@ class Swince(commands.Cog):
         message = "# Scoreboard\n"
         message += "```\n"
         message += f"|{'Name'.center(nameFieldWidth+1)} | {'Score'.center(5)} | {'Details'}\n"
-        message += f"|{'-' * (nameFieldWidth+1)}-|-{'-' * 6}|{'---' * 3} \n"
+        message += f"|{'-' * (nameFieldWidth+1)}-|-{'-' * 6}|{'---' * 4}\n"
 
 
         for (name, gotten, given) in scores:
             # ellipsise and truncate long names
             if len(name) > nameFieldWidth:
-                name[nameFieldWidth] = '…'
-            name = name[:nameFieldWidth+1]
+                name = name[:nameFieldWidth-1] + 'â€¦'
 
             score = gotten - given
-            details = f"{gotten} 📥, {given} 📨"
+            details = f"{str(gotten):>2} 📥 {str(given):>2} 📨"
             
-            message += f"| {name:<{nameFieldWidth}} | {str(score).center(5)} | {details}\n"
+            message += f"| {name:<{nameFieldWidth}} | {str(score):>4}  | {details}\n"
 
         message += "```"
 
