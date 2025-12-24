@@ -111,7 +111,7 @@ class Swince(commands.Cog):
                 user_controller.update_user_name(user.id, nickname)
 
         scores = stats_controller.get_all_score()
-        scores.sort(key=lambda x: -(x[1] - x[2]))
+        scores.sort(key=lambda x: (-(x[1] - x[2]), x[2]))
         # score is a list of tuples (user_name, gotten, given)
 
         longestName = max(map((lambda x: len(x[0])), scores))
@@ -137,8 +137,3 @@ class Swince(commands.Cog):
         message += "```"
 
         await interaction.followup.send(message)
-
-
-
-
-
