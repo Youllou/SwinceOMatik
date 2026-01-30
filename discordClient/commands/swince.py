@@ -121,16 +121,17 @@ class Swince(commands.Cog):
         # list of tuples (user_name, gotten, given)
         
         mode = mode.lower() if mode else "diff"
+        sorting_lambda = None
         match mode[0]:
             case 'd':  # Diff
-                scores.sort(key=lambda x: (-(x[1] - x[2]), x[2]))
+                sorting_lambda = lambda x: (-(x[1] - x[2]), x[2])
             case 'g':  # Given
-                scores.sort(key=lambda x: (-x[2], x[1]))
+                sorting_lambda = lambda x: (-x[2], x[1])
             case 'r':  # Gotten/Received
-                scores.sort(key=lambda x: (-x[1], x[2]))
+                sorting_lambda = lambda x: (-x[1], x[2])
             case _:  # Default to Diff
-                scores.sort(key=lambda x: (-(x[1] - x[2]), x[2]))
-
+                sorting_lambda = lambda x: (-(x[1] - x[2]), x[2])
+        scores.sort(key=sorting_lambda)
         longestName = max(map((lambda x: len(x[0])), scores))
         # could use longestName for dynamic width
         nameFieldWidth = 16
