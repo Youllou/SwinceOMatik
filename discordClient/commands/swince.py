@@ -98,7 +98,14 @@ class Swince(commands.Cog):
         await interaction.followup.send(f"You have {score} chugs to do ! ({gotten} gotten, {given} given)\nChop chop lets not waste a second ! Use {'<' if command_id is not None else ''}/swince{(':'+str(command_id)+'>') if command_id is not None else ''} to register a chug nomination video")
 
     @app_commands.command(name="scoreboard", description="Check who is the best chugger")
-    async def scoreboard(self, interaction: discord.Interaction):
+    @app_commands.describe(
+        mode="Scoreboard mode [Difference]/Given/Received"
+    )
+    async def scoreboard(
+        self,
+        interaction: discord.Interaction,
+        mode: str = None,
+    ):
         await interaction.response.defer(thinking=True)
         stats_controller = swincer_controller.StatController(interaction.guild.id)
         user_controller = swincer_controller.UserController(interaction.guild.id)
@@ -111,9 +118,20 @@ class Swince(commands.Cog):
                 user_controller.update_user_name(user.id, nickname)
 
         scores = stats_controller.get_all_score()
-        scores.sort(key=lambda x: (-(x[1] - x[2]), x[2]))
-        # score is a list of tuples (user_name, gotten, given)
-
+        # list of tuples (user_name, gotten, given)
+        
+        mode = mode.lower() if mode else "diff"
+        sorting_lambda = None
+        match mode[0]:
+            case 'd':  # Diff
+                sorting_lambda = lambda x: (-(x[1] - x[2]), x[2])
+            case 'g':  # Given
+                sorting_lambda = lambda x: (-x[2], x[1])
+            case 'r':  # Gotten/Received
+                sorting_lambda = lambda x: (-x[1], x[2])
+            case _:  # Default to Diff
+                sorting_lambda = lambda x: (-(x[1] - x[2]), x[2])
+        scores.sort(key=sorting_lambda)
         longestName = max(map((lambda x: len(x[0])), scores))
         # could use longestName for dynamic width
         nameFieldWidth = 16
