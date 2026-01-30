@@ -99,7 +99,7 @@ class Swince(commands.Cog):
 
     @app_commands.command(name="scoreboard", description="Check who is the best chugger")
     @app_commands.describe(
-        mode="Scoreboard mode [Difference]/Given/Received"
+        mode="Scoreboard mode [d:Difference]/g:Given/r:Received"
     )
     async def scoreboard(
         self,
