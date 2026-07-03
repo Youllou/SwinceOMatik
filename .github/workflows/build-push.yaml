@@ -16,7 +16,7 @@ jobs:
   build-and-push:
     uses: youllou/workflows/.github/workflows/build-push-ghcr.yaml@main
     with:
-      container-name: SwinceOMatik
+      container-name: swinceomatik
       context: .
       file: Dockerfile
       branch: main
