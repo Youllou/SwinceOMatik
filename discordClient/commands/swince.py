@@ -155,3 +155,13 @@ class Swince(commands.Cog):
         message += "```"
 
         await interaction.followup.send(message)
+
+    @app_commands.command(name="sum", description="you guys are alcoholics")
+    async def sum(self, interaction: discord.Interaction):
+        await interaction.response.defer(thinking=True)
+        total = 0
+        stats_controller = swincer_controller.StatController(interaction.guild.id)
+        scores = stats_controller.get_all_score()
+        for (name,gotten,given) in scores:
+            total += gotten
+        await interaction.followup.send(f"So you guys chuged {total} times... Damn...")
