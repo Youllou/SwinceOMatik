@@ -81,7 +81,8 @@ async def on_ready():
             SwinceOMatik.tree._global_commands[cmd.name].id = cmd.id
         else:  # it's a guild specific command
             SwinceOMatik.tree._guild_commands[cmd.guild_id][cmd.name].id = cmd.id
-
+    with open('/tmp/ready','x') as ready_file:
+        ready_file.write("Start chuging mf")
 # adding events_listener
 event_listener = []
 
